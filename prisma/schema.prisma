@@ -6,3 +6,35 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
+
+enum Role {
+    GUIDE
+    CLIENT
+    ADMIN
+}
+model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    name      String
+    role      String   @default("CLIENT")
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    guide     Guide?
+
+    @@map("users")
+}
+
+model Guide {
+    id        String   @id @default(cuid())
+    userId    String   @unique
+    bio       String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    hourlyRate      Int
+    languages       String
+
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("guides")
+}
